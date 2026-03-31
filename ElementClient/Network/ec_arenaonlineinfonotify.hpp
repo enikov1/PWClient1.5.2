@@ -1,0 +1,38 @@
+
+#ifndef __GNET_EC_ARENAONLINEINFONOTIFY_HPP
+#define __GNET_EC_ARENAONLINEINFONOTIFY_HPP
+
+#include "rpcdefs.h"
+#include "callid.hxx"
+#include "state.hxx"
+
+namespace GNET
+{
+
+struct EC_ArenaTeamMemberOnlineInfo : public Marshal
+{
+	long long player_id;
+	unsigned char online;
+	EC_ArenaTeamMemberOnlineInfo() : player_id(0), online(0) { }
+	EC_ArenaTeamMemberOnlineInfo(const EC_ArenaTeamMemberOnlineInfo &rhs) : player_id(rhs.player_id), online(rhs.online) { }
+	EC_ArenaTeamMemberOnlineInfo(long long l_player_id, unsigned char l_online) : player_id(l_player_id), online(l_online) { }
+	EC_ArenaTeamMemberOnlineInfo& operator=(const EC_ArenaTeamMemberOnlineInfo &rhs) { if(&rhs != this) { player_id = rhs.player_id; online = rhs.online; } return *this; }
+	OctetsStream& marshal(OctetsStream & os) const { return os << player_id << online; }
+	const OctetsStream& unmarshal(const OctetsStream &os) { return os >> player_id >> online; }
+};
+
+typedef std::vector<EC_ArenaTeamMemberOnlineInfo> EC_ArenaTeamMemberOnlineInfoVector;
+
+class EC_ArenaOnlineInfoNotify : public GNET::Protocol
+{
+	#include "ec_arenaonlineinfonotify"
+
+	void Process(Manager *manager, Manager::Session::ID sid)
+	{
+		// Processed in EC_GameSession::ProcessNewProtocols
+	}
+};
+
+};
+
+#endif

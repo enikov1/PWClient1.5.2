@@ -1,0 +1,33 @@
+[
+    {
+        "id": 5,
+        "at": "2026-03-30T07:51:52+00:00",
+        "ip": "192.168.159.1",
+        "body": {
+            "listing_source": "cat",
+            "action": "open",
+            "role_id": 12345,
+            "stall_trade_id": 1,
+            "world_tag": 1,
+            "pos_x": 528,
+            "pos_y": 0,
+            "pos_z": 665,
+            "shop_name_hex": "3c0030003c0020000f003e003e002000cf0448043004380043003900200436043804380043003e000f003c002f003e00",
+            "role_name_hex": "540065007300740050006c006100790065007200",
+            "goods": [
+                {
+                    "item_id": 1122,
+                    "count": 1,
+                    "price": 18000000,
+                    "side": "sell"
+                },
+                {
+                    "item_id": 3044,
+                    "count": 100,
+                    "price": 1,
+                    "side": "buy"
+                }
+            ]
+        }
+    }
+]
