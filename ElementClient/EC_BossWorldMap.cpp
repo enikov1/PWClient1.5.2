@@ -27,6 +27,10 @@ EC_BossWorldMap::EC_BossWorldMap()
 	: m_bIconTableLoaded(false)
 	, m_bShowRespawnGhost(false)
 {
+	// ASCII defaults; can be overridden by configs\world_map_lg.txt
+	m_strRespawnDHM = _AL("Respawn in: %d d %d h %d m");
+	m_strRespawnHM  = _AL("Respawn in: %d h %d m");
+	m_strRespawnM   = _AL("Respawn in: %d m");
 }
 
 EC_BossWorldMap::~EC_BossWorldMap()
@@ -60,6 +64,46 @@ void EC_BossWorldMap::LoadIconConfig()
 	m_TidToIconPath.clear();
 	m_bShowRespawnGhost = false;
 	ReleaseIconSprites();
+
+	// Optional localized respawn strings: bin\configs\world_map_lg.txt
+	// Line 1: for d/h/m   (e.g. "Появится через: %d дн. %d ч. %d мин.")
+	// Line 2: for h/m     (e.g. "Появится через: %d ч. %d мин.")
+	// Line 3: for m       (e.g. "Появится через: %d мин.")
+	{
+		AFile lg;
+		if (lg.Open("configs\\world_map_lg.txt", AFILE_OPENEXIST | AFILE_TEXT) ||
+		    lg.Open("Configs\\world_map_lg.txt", AFILE_OPENEXIST | AFILE_TEXT))
+		{
+			char buf[512];
+			DWORD rd = 0;
+			int lineIdx = 0;
+			while (lineIdx < 3 && lg.ReadLine(buf, sizeof(buf) - 1, &rd))
+			{
+				if (rd == 0)
+					continue;
+				buf[rd] = '\0';
+				char* p = buf;
+				while (*p == ' ' || *p == '\t' || *p == '\r' || *p == '\n')
+					p++;
+				if (!*p || *p == '#' || *p == ';')
+					continue;
+				char* end = p + strlen(p);
+				while (end > p && (end[-1] == '\r' || end[-1] == '\n' || end[-1] == ' ' || end[-1] == '\t'))
+					*--end = '\0';
+				if (end <= p)
+					continue;
+
+				switch (lineIdx)
+				{
+				case 0: m_strRespawnDHM.Format(_AL("%s"), AS2AC(p)); break;
+				case 1: m_strRespawnHM .Format(_AL("%s"), AS2AC(p)); break;
+				case 2: m_strRespawnM  .Format(_AL("%s"), AS2AC(p)); break;
+				}
+				lineIdx++;
+			}
+			lg.Close();
+		}
+	}
 
 	AFile file;
 	if (!file.Open("Configs\\boss_worldmap_icons.conf", AFILE_OPENEXIST | AFILE_TEXT))
@@ -440,11 +484,38 @@ void EC_BossWorldMap::Draw(
 			hours = hours % 24;
 
 			if (days > 0)
-				hp.strHint += ACString().Format(_AL("\nПоявится через: %d дн. %d ч. %d мин."), days, hours, mins);
+			{
+				const ACString& fmt = m_strRespawnDHM;
+				if (!fmt.IsEmpty())
+				{
+					ACString line;
+					line.Format(fmt, days, hours, mins);
+					hp.strHint += _AL("\n");
+					hp.strHint += line;
+				}
+			}
 			else if (hours > 0)
-				hp.strHint += ACString().Format(_AL("\nПоявится через: %d ч. %d мин."), hours, mins);
+			{
+				const ACString& fmt = m_strRespawnHM;
+				if (!fmt.IsEmpty())
+				{
+					ACString line;
+					line.Format(fmt, hours, mins);
+					hp.strHint += _AL("\n");
+					hp.strHint += line;
+				}
+			}
 			else
-				hp.strHint += ACString().Format(_AL("\nПоявится через: %d мин."), mins);
+			{
+				const ACString& fmt = m_strRespawnM;
+				if (!fmt.IsEmpty())
+				{
+					ACString line;
+					line.Format(fmt, mins);
+					hp.strHint += _AL("\n");
+					hp.strHint += line;
+				}
+			}
 		}
 
 		m_HoverPoints.push_back(hp);

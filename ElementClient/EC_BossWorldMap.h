@@ -51,6 +51,9 @@ private:
 	abase::hash_map<int, int, abase::_hash_function> m_IconLoadFailed;
 	bool m_bIconTableLoaded;
 	bool m_bShowRespawnGhost;
+	ACString m_strRespawnDHM;
+	ACString m_strRespawnHM;
+	ACString m_strRespawnM;
 
 	static EC_BossWorldMap* s_pInstance;
 
