@@ -383,6 +383,5 @@ healthchecksdb
 /CNewSkin/NewSkin___Win32_ReleaseUni
 *.tlog
 *.tlog
-/.vs
-/.history
-/.cursor
+.history/
+.cursor/
